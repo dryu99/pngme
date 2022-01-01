@@ -14,26 +14,25 @@ pub struct Chunk {
 impl TryFrom<&[u8]> for Chunk {
     type Error = Error;
 
-    // TODO use ? operator for read_exact calls
     fn try_from(bytes: &[u8]) -> Result<Self> {
         // TODO validate len?
         let mut reader = BufReader::new(bytes);
 
         // read length
         let mut buffer = [0u8; 4];
-        reader.read_exact(&mut buffer);
+        reader.read_exact(&mut buffer)?;
         let chunk_length = u32::from_be_bytes(buffer);
         println!("chunk length: {}", chunk_length);
 
         // read chunk type
         let mut buffer = [0u8; 4];
-        reader.read_exact(&mut buffer);
+        reader.read_exact(&mut buffer)?;
         let chunk_type = ChunkType::try_from(buffer)?;
         println!("chunk type: {}", chunk_type);
 
         // read chunk data
         let mut chunk_data = vec![0u8; chunk_length as usize];
-        reader.read_exact(&mut chunk_data);
+        reader.read_exact(&mut chunk_data)?;
         println!(
             "chunk data: {}",
             String::from_utf8(chunk_data.clone()).unwrap()
@@ -41,7 +40,7 @@ impl TryFrom<&[u8]> for Chunk {
 
         // read crc
         let mut buffer = [0u8; 4];
-        reader.read_exact(&mut buffer);
+        reader.read_exact(&mut buffer)?;
         let crc = u32::from_be_bytes(buffer);
         println!("crc: {}", crc);
 

@@ -11,9 +11,9 @@ pub struct ChunkType(u8, u8, u8, u8);
 impl ChunkType {
     const BYTE_LEN: u8 = 4;
 
-    pub fn new(bytes: &[u8]) -> Result<Self> {
-        if bytes.len() != Self::BYTE_LEN.into() {
-            return Err("[ChunkType::new] not given 4 bytes");
+    fn new(bytes: &[u8]) -> Result<Self> {
+        if bytes.len() != Self::BYTE_LEN as usize {
+            return Err("[ChunkType::new] not given 4 bytes".into());
         }
 
         let is_ascii = bytes
@@ -21,8 +21,8 @@ impl ChunkType {
             .all(|b| b.is_ascii_lowercase() || b.is_ascii_uppercase());
 
         match is_ascii {
-            true => Ok(ChunkType(bytes[0], bytes[1], bytes[2], bytes[3])),
-            false => Err("[ChunkType::new] given bytes are not ascii"),
+            true => Ok(Self(bytes[0], bytes[1], bytes[2], bytes[3])),
+            false => Err("[ChunkType::new] given bytes are not ascii".into()),
         }
     }
 
