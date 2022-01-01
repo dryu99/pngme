@@ -8,7 +8,7 @@ impl TryFrom<[u8; 4]> for ChunkType {
     type Error = &'static str;
 
     fn try_from(bytes: [u8; 4]) -> Result<Self, Self::Error> {
-        Ok(ChunkType(bytes[0], bytes[1], bytes[2], bytes[3]))
+        ChunkType::new(&bytes)
     }
 }
 
@@ -17,7 +17,7 @@ impl FromStr for ChunkType {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let bytes = s.as_bytes();
-        Ok(ChunkType(bytes[0], bytes[1], bytes[2], bytes[3]))
+        ChunkType::new(bytes)
     }
 }
 
@@ -28,8 +28,45 @@ impl fmt::Display for ChunkType {
 }
 
 impl ChunkType {
+    const BYTE_LEN: u8 = 4;
+
+    pub fn new(bytes: &[u8]) -> Result<Self, &'static str> {
+        if bytes.len() != Self::BYTE_LEN.into() {
+            return Err("[ChunkType::new] not given 4 bytes");
+        }
+
+        let are_bytes_ascii = bytes
+            .iter()
+            .all(|b| b.is_ascii_lowercase() || b.is_ascii_uppercase());
+
+        match are_bytes_ascii {
+            true => Ok(ChunkType(bytes[0], bytes[1], bytes[2], bytes[3])),
+            false => Err("[ChunkType::new] given bytes are not ascii"),
+        }
+    }
+
     pub fn bytes(&self) -> [u8; 4] {
         [self.0, self.1, self.2, self.3]
+    }
+
+    pub fn is_valid(&self) -> bool {
+        self.is_reserved_bit_valid()
+    }
+
+    pub fn is_critical(&self) -> bool {
+        todo!()
+    }
+
+    pub fn is_public(&self) -> bool {
+        todo!()
+    }
+
+    pub fn is_reserved_bit_valid(&self) -> bool {
+        self.2.is_ascii_uppercase()
+    }
+
+    pub fn is_safe_to_copy(&self) -> bool {
+        todo!()
     }
 }
 
@@ -77,17 +114,17 @@ mod tests {
     //     assert!(!chunk.is_public());
     // }
 
-    // #[test]
-    // pub fn test_chunk_type_is_reserved_bit_valid() {
-    //     let chunk = ChunkType::from_str("RuSt").unwrap();
-    //     assert!(chunk.is_reserved_bit_valid());
-    // }
+    #[test]
+    pub fn test_chunk_type_is_reserved_bit_valid() {
+        let chunk = ChunkType::from_str("RuSt").unwrap();
+        assert!(chunk.is_reserved_bit_valid());
+    }
 
-    // #[test]
-    // pub fn test_chunk_type_is_reserved_bit_invalid() {
-    //     let chunk = ChunkType::from_str("Rust").unwrap();
-    //     assert!(!chunk.is_reserved_bit_valid());
-    // }
+    #[test]
+    pub fn test_chunk_type_is_reserved_bit_invalid() {
+        let chunk = ChunkType::from_str("Rust").unwrap();
+        assert!(!chunk.is_reserved_bit_valid());
+    }
 
     // #[test]
     // pub fn test_chunk_type_is_safe_to_copy() {
@@ -101,20 +138,20 @@ mod tests {
     //     assert!(!chunk.is_safe_to_copy());
     // }
 
-    // #[test]
-    // pub fn test_valid_chunk_is_valid() {
-    //     let chunk = ChunkType::from_str("RuSt").unwrap();
-    //     assert!(chunk.is_valid());
-    // }
+    #[test]
+    pub fn test_valid_chunk_is_valid() {
+        let chunk = ChunkType::from_str("RuSt").unwrap();
+        assert!(chunk.is_valid());
+    }
 
-    // #[test]
-    // pub fn test_invalid_chunk_is_valid() {
-    //     let chunk = ChunkType::from_str("Rust").unwrap();
-    //     assert!(!chunk.is_valid());
+    #[test]
+    pub fn test_invalid_chunk_is_valid() {
+        let chunk = ChunkType::from_str("Rust").unwrap();
+        assert!(!chunk.is_valid());
 
-    //     let chunk = ChunkType::from_str("Ru1t");
-    //     assert!(chunk.is_err());
-    // }
+        let chunk = ChunkType::from_str("Ru1t");
+        assert!(chunk.is_err());
+    }
 
     // #[test]
     // pub fn test_chunk_type_string() {
