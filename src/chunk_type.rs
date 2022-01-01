@@ -1,49 +1,26 @@
 use std::fmt;
 use std::str::FromStr;
 
+use crate::{Error, Result};
+
+// A validated PNG chunk type. See PNG spec for more details.
+// http://www.libpng.org/pub/png/spec/1.2/PNG-Structure.html
 #[derive(PartialEq, Eq, Debug)]
-struct ChunkType(u8, u8, u8, u8);
-
-impl TryFrom<[u8; 4]> for ChunkType {
-    type Error = &'static str;
-
-    fn try_from(bytes: [u8; 4]) -> Result<Self, Self::Error> {
-        ChunkType::new(&bytes)
-    }
-}
-
-impl FromStr for ChunkType {
-    type Err = &'static str;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let bytes = s.as_bytes();
-        ChunkType::new(bytes)
-    }
-}
-
-impl fmt::Display for ChunkType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{}{}{}{}",
-            self.0 as char, self.1 as char, self.2 as char, self.3 as char
-        )
-    }
-}
+pub struct ChunkType(u8, u8, u8, u8);
 
 impl ChunkType {
     const BYTE_LEN: u8 = 4;
 
-    pub fn new(bytes: &[u8]) -> Result<Self, &'static str> {
+    pub fn new(bytes: &[u8]) -> Result<Self> {
         if bytes.len() != Self::BYTE_LEN.into() {
             return Err("[ChunkType::new] not given 4 bytes");
         }
 
-        let are_bytes_ascii = bytes
+        let is_ascii = bytes
             .iter()
             .all(|b| b.is_ascii_lowercase() || b.is_ascii_uppercase());
 
-        match are_bytes_ascii {
+        match is_ascii {
             true => Ok(ChunkType(bytes[0], bytes[1], bytes[2], bytes[3])),
             false => Err("[ChunkType::new] given bytes are not ascii"),
         }
@@ -71,6 +48,33 @@ impl ChunkType {
 
     pub fn is_safe_to_copy(&self) -> bool {
         self.3.is_ascii_lowercase()
+    }
+}
+
+impl TryFrom<[u8; 4]> for ChunkType {
+    type Error = Error;
+
+    fn try_from(bytes: [u8; 4]) -> Result<Self> {
+        ChunkType::new(&bytes)
+    }
+}
+
+impl FromStr for ChunkType {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self> {
+        let bytes = s.as_bytes();
+        ChunkType::new(bytes)
+    }
+}
+
+impl fmt::Display for ChunkType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}{}{}{}",
+            self.0 as char, self.1 as char, self.2 as char, self.3 as char
+        )
     }
 }
 
