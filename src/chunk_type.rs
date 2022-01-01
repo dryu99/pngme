@@ -58,7 +58,7 @@ impl ChunkType {
     }
 
     pub fn is_public(&self) -> bool {
-        todo!()
+        self.1.is_ascii_uppercase()
     }
 
     pub fn is_reserved_bit_valid(&self) -> bool {
@@ -66,7 +66,7 @@ impl ChunkType {
     }
 
     pub fn is_safe_to_copy(&self) -> bool {
-        todo!()
+        self.3.is_ascii_lowercase()
     }
 }
 
@@ -102,17 +102,17 @@ mod tests {
         assert!(!chunk.is_critical());
     }
 
-    // #[test]
-    // pub fn test_chunk_type_is_public() {
-    //     let chunk = ChunkType::from_str("RUSt").unwrap();
-    //     assert!(chunk.is_public());
-    // }
+    #[test]
+    pub fn test_chunk_type_is_public() {
+        let chunk = ChunkType::from_str("RUSt").unwrap();
+        assert!(chunk.is_public());
+    }
 
-    // #[test]
-    // pub fn test_chunk_type_is_not_public() {
-    //     let chunk = ChunkType::from_str("RuSt").unwrap();
-    //     assert!(!chunk.is_public());
-    // }
+    #[test]
+    pub fn test_chunk_type_is_not_public() {
+        let chunk = ChunkType::from_str("RuSt").unwrap();
+        assert!(!chunk.is_public());
+    }
 
     #[test]
     pub fn test_chunk_type_is_reserved_bit_valid() {
@@ -126,17 +126,17 @@ mod tests {
         assert!(!chunk.is_reserved_bit_valid());
     }
 
-    // #[test]
-    // pub fn test_chunk_type_is_safe_to_copy() {
-    //     let chunk = ChunkType::from_str("RuSt").unwrap();
-    //     assert!(chunk.is_safe_to_copy());
-    // }
+    #[test]
+    pub fn test_chunk_type_is_safe_to_copy() {
+        let chunk = ChunkType::from_str("RuSt").unwrap();
+        assert!(chunk.is_safe_to_copy());
+    }
 
-    // #[test]
-    // pub fn test_chunk_type_is_unsafe_to_copy() {
-    //     let chunk = ChunkType::from_str("RuST").unwrap();
-    //     assert!(!chunk.is_safe_to_copy());
-    // }
+    #[test]
+    pub fn test_chunk_type_is_unsafe_to_copy() {
+        let chunk = ChunkType::from_str("RuST").unwrap();
+        assert!(!chunk.is_safe_to_copy());
+    }
 
     #[test]
     pub fn test_valid_chunk_is_valid() {
