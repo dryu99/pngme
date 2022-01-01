@@ -54,7 +54,7 @@ impl ChunkType {
     }
 
     pub fn is_critical(&self) -> bool {
-        todo!()
+        self.0.is_ascii_uppercase()
     }
 
     pub fn is_public(&self) -> bool {
@@ -90,17 +90,17 @@ mod tests {
         assert_eq!(expected, actual);
     }
 
-    // #[test]
-    // pub fn test_chunk_type_is_critical() {
-    //     let chunk = ChunkType::from_str("RuSt").unwrap();
-    //     assert!(chunk.is_critical());
-    // }
+    #[test]
+    pub fn test_chunk_type_is_critical() {
+        let chunk = ChunkType::from_str("RuSt").unwrap();
+        assert!(chunk.is_critical());
+    }
 
-    // #[test]
-    // pub fn test_chunk_type_is_not_critical() {
-    //     let chunk = ChunkType::from_str("ruSt").unwrap();
-    //     assert!(!chunk.is_critical());
-    // }
+    #[test]
+    pub fn test_chunk_type_is_not_critical() {
+        let chunk = ChunkType::from_str("ruSt").unwrap();
+        assert!(!chunk.is_critical());
+    }
 
     // #[test]
     // pub fn test_chunk_type_is_public() {
