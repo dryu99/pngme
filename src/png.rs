@@ -1,3 +1,59 @@
+use std::fmt;
+
+use crate::chunk::Chunk;
+use crate::{Error, Result};
+
+struct Png {
+    header: [u8; 8],
+    chunks: Vec<Chunk>,
+}
+
+impl Png {
+    const STANDARD_HEADER: [u8; 8] = [137, 80, 78, 71, 13, 10, 26, 10];
+
+    fn from_chunks(chunks: Vec<Chunk>) -> Self {
+        todo!()
+    }
+
+    fn append_chunk(&mut self, chunk: Chunk) {
+        todo!()
+    }
+
+    fn remove_chunk(&mut self, chunk_type: &str) -> Result<Chunk> {
+        todo!()
+    }
+
+    fn header(&self) -> &[u8; 8] {
+        todo!()
+    }
+
+    fn chunks(&self) -> &[Chunk] {
+        todo!()
+    }
+
+    fn chunk_by_type(&self, chunk_type: &str) -> Option<&Chunk> {
+        todo!()
+    }
+
+    fn as_bytes(&self) -> Vec<u8> {
+        todo!()
+    }
+}
+
+impl TryFrom<&[u8]> for Png {
+    type Error = Error;
+
+    fn try_from(bytes: &[u8]) -> Result<Self> {
+        todo!()
+    }
+}
+
+impl fmt::Display for Png {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        todo!()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

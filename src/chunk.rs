@@ -13,6 +13,24 @@ pub struct Chunk {
 }
 
 impl Chunk {
+    pub fn new(chunk_type: ChunkType, data: Vec<u8>) -> Self {
+        let type_to_data_bytes: Vec<u8> = chunk_type
+            .bytes()
+            .iter()
+            .chain(data.iter()) // TODO could we just do &data here
+            .copied()
+            .collect();
+
+        let crc = crc32::checksum_ieee(&type_to_data_bytes);
+
+        Self {
+            length: data.len() as u32,
+            chunk_type,
+            data,
+            crc,
+        }
+    }
+
     pub fn length(&self) -> u32 {
         self.length
     }
