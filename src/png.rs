@@ -1,5 +1,5 @@
+use std::collections::HashMap;
 use std::fmt;
-use std::io::{BufReader, Read};
 
 use crate::chunk::Chunk;
 use crate::{Error, Result};
@@ -20,11 +20,17 @@ impl Png {
     }
 
     fn append_chunk(&mut self, chunk: Chunk) {
-        todo!()
+        self.chunks.push(chunk);
     }
 
     fn remove_chunk(&mut self, chunk_type: &str) -> Result<Chunk> {
-        todo!()
+        let index = self
+            .chunks()
+            .iter()
+            .position(|chunk| chunk.chunk_type().to_string() == chunk_type)
+            .ok_or("couldn't find chunk")?;
+
+        Ok(self.chunks.remove(index))
     }
 
     fn header(&self) -> &[u8; 8] {
@@ -36,17 +42,31 @@ impl Png {
     }
 
     fn chunk_by_type(&self, chunk_type: &str) -> Option<&Chunk> {
-        todo!()
+        self.chunks()
+            .iter()
+            .find(|chunk| chunk.chunk_type().to_string() == chunk_type)
     }
 
+    // TODO can we do better here? is there an alternative to flattening to get an array of all bytes?
     fn as_bytes(&self) -> Vec<u8> {
-        todo!()
+        let all_chunk_bytes: Vec<u8> = self
+            .chunks()
+            .iter()
+            .flat_map(|chunk| chunk.as_bytes())
+            .collect();
+
+        self.header()
+            .iter()
+            .chain(all_chunk_bytes.iter())
+            .copied()
+            .collect()
     }
 }
 
 impl TryFrom<&[u8]> for Png {
     type Error = Error;
 
+    // TODO validate ihdr + iend
     fn try_from(bytes: &[u8]) -> Result<Self> {
         // read header
         let header = &bytes[0..8];
@@ -73,7 +93,11 @@ impl TryFrom<&[u8]> for Png {
 
 impl fmt::Display for Png {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        writeln!(f, "Png {{",)?;
+        writeln!(f, "  Header length: {}", self.header().len())?;
+        writeln!(f, "  Chunks count: {}", self.chunks().len())?;
+        writeln!(f, "}}",)?;
+        Ok(())
     }
 }
 
