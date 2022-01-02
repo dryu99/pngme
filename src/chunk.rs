@@ -30,11 +30,25 @@ impl Chunk {
     }
 
     pub fn data_as_string(&self) -> Result<String> {
-        // TODO avoid cloning here (maybe use RC)
-        Ok(String::from_utf8(self.data.clone())?)
+        // TODO can we avoid cloning here via to_vec (maybe use RC)
+        Ok(String::from_utf8(self.data().to_vec())?)
     }
+
     pub fn as_bytes(&self) -> Vec<u8> {
-        todo!()
+        let length = self.length().to_be_bytes();
+        let chunk_type = self.chunk_type().bytes();
+        let chunk_data = self.data();
+        let crc = self.crc().to_be_bytes();
+
+        let chunk_as_bytes: Vec<u8> = length
+            .iter()
+            .chain(chunk_type.iter())
+            .chain(chunk_data.iter())
+            .chain(crc.iter())
+            .copied() // TODO can we avoid this copy
+            .collect();
+
+        chunk_as_bytes
     }
 }
 
@@ -185,6 +199,26 @@ mod tests {
         let chunk = Chunk::try_from(chunk_data.as_ref());
 
         assert!(chunk.is_err());
+    }
+
+    #[test]
+    pub fn test_chunk_to_bytes() {
+        let data_length: u32 = 42;
+        let chunk_type = "RuSt".as_bytes();
+        let message_bytes = "This is where your secret message will be!".as_bytes();
+        let crc: u32 = 2882656334;
+
+        let chunk_data: Vec<u8> = data_length
+            .to_be_bytes()
+            .iter()
+            .chain(chunk_type.iter())
+            .chain(message_bytes.iter())
+            .chain(crc.to_be_bytes().iter())
+            .copied()
+            .collect();
+
+        let chunk = Chunk::try_from(chunk_data.as_ref()).unwrap();
+        assert_eq!(chunk.as_bytes(), chunk_data);
     }
 
     #[test]
