@@ -1,4 +1,5 @@
 use std::fmt;
+use std::io::{BufReader, Read};
 
 use crate::chunk::Chunk;
 use crate::{Error, Result};
@@ -44,7 +45,26 @@ impl TryFrom<&[u8]> for Png {
     type Error = Error;
 
     fn try_from(bytes: &[u8]) -> Result<Self> {
-        todo!()
+        // read header
+        let header = &bytes[0..8];
+        if header != Self::STANDARD_HEADER {
+            return Err("invalid header given".into());
+        }
+
+        // read chunks
+        let mut chunks: Vec<Chunk> = Vec::new();
+        let mut bytes_read_so_far = 8; // only read header so far
+
+        while bytes_read_so_far < bytes.len() {
+            let chunk = Chunk::try_from(&bytes[bytes_read_so_far..])?; // TODO can we pass in a more accurate/smaller slice?
+            bytes_read_so_far += chunk.as_bytes().len(); // TODO can we make this less expensive (receiving heap allocated Vec). we can prob just track len in Chunk
+            chunks.push(chunk);
+        }
+
+        Ok(Self {
+            header: Self::STANDARD_HEADER,
+            chunks,
+        })
     }
 }
 
