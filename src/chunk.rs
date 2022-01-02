@@ -75,6 +75,14 @@ impl Chunk {
 
         chunk_as_bytes
     }
+
+    pub fn is_ihdr(&self) -> bool {
+        self.chunk_type().is_ihdr()
+    }
+
+    pub fn is_iend(&self) -> bool {
+        self.chunk_type().is_iend()
+    }
 }
 
 impl TryFrom<&[u8]> for Chunk {

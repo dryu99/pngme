@@ -9,10 +9,12 @@ use crate::{Error, Result};
 pub struct ChunkType(u8, u8, u8, u8);
 
 impl ChunkType {
-    const BYTE_LEN: u8 = 4;
+    const LENGTH: usize = 4;
+    const IHDR_BYTES: [u8; 4] = [0x49, 0x48, 0x44, 0x52];
+    const IEND_BYTES: [u8; 4] = [0x49, 0x45, 0x4E, 0x44];
 
     fn new(bytes: &[u8]) -> Result<Self> {
-        if bytes.len() != Self::BYTE_LEN as usize {
+        if bytes.len() != Self::LENGTH {
             return Err("[ChunkType::new] not given 4 bytes".into());
         }
 
@@ -48,6 +50,14 @@ impl ChunkType {
 
     pub fn is_safe_to_copy(&self) -> bool {
         self.3.is_ascii_lowercase()
+    }
+
+    pub fn is_ihdr(&self) -> bool {
+        self.bytes() == Self::IHDR_BYTES
+    }
+
+    pub fn is_iend(&self) -> bool {
+        self.bytes() == Self::IEND_BYTES
     }
 }
 
