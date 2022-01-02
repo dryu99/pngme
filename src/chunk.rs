@@ -1,3 +1,4 @@
+use crc::crc32;
 use std::fmt;
 use std::io::{BufReader, Read};
 
@@ -28,10 +29,9 @@ impl Chunk {
         self.crc
     }
 
-    // TODO use custom Result type here
-    pub fn data_as_string(&self) -> std::result::Result<String, std::string::FromUtf8Error> {
+    pub fn data_as_string(&self) -> Result<String> {
         // TODO avoid cloning here (maybe use RC)
-        String::from_utf8(self.data.clone())
+        Ok(String::from_utf8(self.data.clone())?)
     }
     pub fn as_bytes(&self) -> Vec<u8> {
         todo!()
@@ -41,7 +41,6 @@ impl Chunk {
 impl TryFrom<&[u8]> for Chunk {
     type Error = Error;
 
-    // TODO delete prints
     fn try_from(bytes: &[u8]) -> Result<Self> {
         let mut reader = BufReader::new(bytes);
 
@@ -63,6 +62,12 @@ impl TryFrom<&[u8]> for Chunk {
         let mut buffer = [0u8; 4];
         reader.read_exact(&mut buffer)?;
         let crc = u32::from_be_bytes(buffer);
+
+        let type_to_data_bytes = &bytes[4..(8 + chunk_length) as usize];
+        let expected_crc = crc32::checksum_ieee(type_to_data_bytes);
+        if crc != expected_crc {
+            return Err("crc validation failed".into());
+        }
 
         Ok(Self {
             length: chunk_length,
