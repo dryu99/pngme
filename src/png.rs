@@ -13,7 +13,10 @@ impl Png {
     const STANDARD_HEADER: [u8; 8] = [137, 80, 78, 71, 13, 10, 26, 10];
 
     fn from_chunks(chunks: Vec<Chunk>) -> Self {
-        todo!()
+        Self {
+            header: Self::STANDARD_HEADER,
+            chunks,
+        }
     }
 
     fn append_chunk(&mut self, chunk: Chunk) {
@@ -25,11 +28,11 @@ impl Png {
     }
 
     fn header(&self) -> &[u8; 8] {
-        todo!()
+        &self.header
     }
 
     fn chunks(&self) -> &[Chunk] {
-        todo!()
+        &self.chunks
     }
 
     fn chunk_by_type(&self, chunk_type: &str) -> Option<&Chunk> {
@@ -53,11 +56,11 @@ impl TryFrom<&[u8]> for Png {
 
         // read chunks
         let mut chunks: Vec<Chunk> = Vec::new();
-        let mut bytes_read_so_far = 8; // only read header so far
+        let mut chunk_byte_ptr = 8; // read header already
 
-        while bytes_read_so_far < bytes.len() {
-            let chunk = Chunk::try_from(&bytes[bytes_read_so_far..])?; // TODO can we pass in a more accurate/smaller slice?
-            bytes_read_so_far += chunk.as_bytes().len(); // TODO can we make this less expensive (receiving heap allocated Vec). we can prob just track len in Chunk
+        while chunk_byte_ptr < bytes.len() {
+            let chunk = Chunk::try_from(&bytes[chunk_byte_ptr..])?; // TODO can we pass in a more accurate/smaller slice?
+            chunk_byte_ptr += chunk.as_bytes().len(); // TODO can we make this less expensive (receiving heap allocated Vec). we can prob just track len in Chunk
             chunks.push(chunk);
         }
 
