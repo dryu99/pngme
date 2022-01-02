@@ -29,8 +29,12 @@ impl Chunk {
         self.crc
     }
 
+    // Note: Originally I wanted to avoid using to_vec() here to avoid cloning, but it makes sense.
+    //       We can't return a reference here because there is no owner for our Chunk data's string representation.
+    //       The caller has to become the owner of the new String.
+    //       Maybe there is a way to make the output a String reference that points to the Vec<u8> owned by the Chunk.
+    //       But even if it was possible, there'd prob be lifetime implications. Simpler to just do it this way.
     pub fn data_as_string(&self) -> Result<String> {
-        // TODO can we avoid cloning here via to_vec (maybe use RC)
         Ok(String::from_utf8(self.data().to_vec())?)
     }
 
@@ -40,12 +44,15 @@ impl Chunk {
         let chunk_data = self.data();
         let crc = self.crc().to_be_bytes();
 
+        // Note: Originally I wanted to avoid using copied() here, but it makes sense.
+        //       We can't return a reference here because there is no owner for our Chunk's byte representation.
+        //       The caller has to become the owner of the new Vec<u8>.
         let chunk_as_bytes: Vec<u8> = length
             .iter()
             .chain(chunk_type.iter())
             .chain(chunk_data.iter())
             .chain(crc.iter())
-            .copied() // TODO can we avoid this copy
+            .copied()
             .collect();
 
         chunk_as_bytes
