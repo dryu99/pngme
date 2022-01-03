@@ -6,6 +6,8 @@ use crate::chunk::Chunk;
 use crate::chunk_type::ChunkType;
 use crate::png::Png;
 
+// TODO can we let caller handle errors? redundant expect() everywhere
+
 pub fn encode(args: args::EncodeArgs) {
     // read bytes from file and create Png
     let mut png = Png::from_file(&args.filename).expect("Unable to create Png");
@@ -24,11 +26,29 @@ pub fn encode(args: args::EncodeArgs) {
 }
 
 pub fn decode(args: args::DecodeArgs) {
-    todo!()
+    let png = Png::from_file(&args.filename).expect("Unable to create Png");
+
+    match png.chunk_by_type(&args.chunk_type) {
+        Some(chunk) => println!(
+            "{}",
+            chunk
+                .data_as_string()
+                .expect("Unable to read data in chunk")
+        ),
+        None => println!("Couldn't find chunk with given chunk type!"),
+    }
 }
 
 pub fn remove(args: args::RemoveArgs) {
-    todo!()
+    let mut png = Png::from_file(&args.filename).expect("Unable to create Png");
+
+    match png.remove_chunk(&args.chunk_type) {
+        Ok(_chunk) => {
+            fs::write(&args.filename, png.as_bytes()).expect("Unable to write file");
+            println!("Successfully removed chunk");
+        }
+        Err(_) => eprintln!("Failed to remove chunk"),
+    }
 }
 
 pub fn print(args: args::PrintArgs) {
