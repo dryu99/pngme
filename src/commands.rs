@@ -8,6 +8,7 @@ use crate::png::Png;
 
 // TODO can we let caller handle errors? redundant expect() everywhere
 
+/// Encodes a message into a PNG file and saves the result
 pub fn encode(args: args::EncodeArgs) {
     // read bytes from file and create Png
     let mut png = Png::from_file(&args.filename).expect("Unable to create Png");
@@ -16,7 +17,6 @@ pub fn encode(args: args::EncodeArgs) {
     let chunk_type = ChunkType::from_str(&args.chunk_type).expect("Invalid chunk type");
     let chunk_data: Vec<u8> = args.message.bytes().collect();
     let chunk = Chunk::new(chunk_type, chunk_data);
-    println!("chunk: {}", chunk);
 
     // TODO validate chunk (here or in chunk.rs?) - can't be critical or sth like that idk
     png.append_chunk(chunk);
@@ -25,6 +25,7 @@ pub fn encode(args: args::EncodeArgs) {
     fs::write(&args.filename, png.as_bytes()).expect("Unable to write file");
 }
 
+/// Searches for a message hidden in a PNG file and prints the message if one is found
 pub fn decode(args: args::DecodeArgs) {
     let png = Png::from_file(&args.filename).expect("Unable to create Png");
 
@@ -39,6 +40,7 @@ pub fn decode(args: args::DecodeArgs) {
     }
 }
 
+/// Removes a chunk from a PNG file and saves the result
 pub fn remove(args: args::RemoveArgs) {
     let mut png = Png::from_file(&args.filename).expect("Unable to create Png");
 
@@ -51,12 +53,9 @@ pub fn remove(args: args::RemoveArgs) {
     }
 }
 
+// TODO add an option for verbose print
+/// Prints all of the chunks in a PNG file
 pub fn print(args: args::PrintArgs) {
     let png = Png::from_file(&args.filename).expect("Unable to create Png");
     println!("{}", png);
-
-    // TODO add an option for print for verbose output
-    for chunk in png.chunks() {
-        println!("chunk: {}", chunk);
-    }
 }

@@ -83,7 +83,7 @@ impl TryFrom<&[u8]> for Png {
 
         // read chunks
         let mut chunks: Vec<Chunk> = Vec::new();
-        let mut chunk_byte_ptr = 8; // read header already
+        let mut chunk_byte_ptr = 8; // 8 b/c we read header already
 
         while chunk_byte_ptr < bytes.len() {
             let chunk = Chunk::try_from(&bytes[chunk_byte_ptr..])?; // TODO can we pass in a more accurate/smaller slice?
@@ -101,8 +101,11 @@ impl TryFrom<&[u8]> for Png {
 impl fmt::Display for Png {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(f, "Png {{",)?;
-        writeln!(f, "  Header length: {}", self.header().len())?;
-        writeln!(f, "  Chunks count: {}", self.chunks().len())?;
+        writeln!(f, "  Chunks: [")?;
+        for (i, chunk) in self.chunks().iter().enumerate() {
+            writeln!(f, "    {}: {}", i + 1, chunk.chunk_type())?;
+        }
+        writeln!(f, "  ]")?;
         writeln!(f, "}}",)?;
         Ok(())
     }
