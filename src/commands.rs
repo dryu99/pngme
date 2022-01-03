@@ -8,8 +8,7 @@ use crate::png::Png;
 
 pub fn encode(args: args::EncodeArgs) {
     // read bytes from file and create Png struct
-    let file_bytes = fs::read(&args.filename).expect("Unable to read file");
-    let mut png = Png::try_from(&file_bytes[..]).expect("Unable to create Png");
+    let mut png = Png::from_file(&args.filename).expect("Unable to create Png");
 
     // println!("png: {}", png);
     // for chunk in png.chunks() {
@@ -40,8 +39,7 @@ pub fn remove(args: args::RemoveArgs) {
 }
 
 pub fn print(args: args::PrintArgs) {
-    let file_bytes = fs::read(&args.filename).expect("Unable to read file");
-    let png = Png::try_from(&file_bytes[..]).expect("Unable to create Png");
+    let png = Png::from_file(&args.filename).expect("Unable to create Png");
 
     println!("png: {}", png);
     for chunk in png.chunks() {

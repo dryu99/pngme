@@ -1,4 +1,5 @@
 use std::fmt;
+use std::fs;
 
 use crate::chunk::Chunk;
 use crate::{Error, Result};
@@ -16,6 +17,11 @@ impl Png {
             header: Self::STANDARD_HEADER,
             chunks,
         }
+    }
+
+    pub fn from_file(filename: &str) -> Result<Self> {
+        let file_bytes = fs::read(filename).expect("Unable to read file");
+        Png::try_from(&file_bytes[..])
     }
 
     /// Append chunk at second last index (since IEND chunk must always be last)
