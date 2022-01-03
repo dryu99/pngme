@@ -1,29 +1,28 @@
-use std::collections::HashMap;
 use std::fmt;
 
 use crate::chunk::Chunk;
 use crate::{Error, Result};
 
-struct Png {
+pub struct Png {
     header: [u8; 8],
     chunks: Vec<Chunk>,
 }
 
 impl Png {
-    const STANDARD_HEADER: [u8; 8] = [137, 80, 78, 71, 13, 10, 26, 10];
+    pub const STANDARD_HEADER: [u8; 8] = [137, 80, 78, 71, 13, 10, 26, 10];
 
-    fn from_chunks(chunks: Vec<Chunk>) -> Self {
+    pub fn from_chunks(chunks: Vec<Chunk>) -> Self {
         Self {
             header: Self::STANDARD_HEADER,
             chunks,
         }
     }
 
-    fn append_chunk(&mut self, chunk: Chunk) {
+    pub fn append_chunk(&mut self, chunk: Chunk) {
         self.chunks.push(chunk);
     }
 
-    fn remove_chunk(&mut self, chunk_type: &str) -> Result<Chunk> {
+    pub fn remove_chunk(&mut self, chunk_type: &str) -> Result<Chunk> {
         let index = self
             .chunks()
             .iter()
@@ -33,22 +32,22 @@ impl Png {
         Ok(self.chunks.remove(index))
     }
 
-    fn header(&self) -> &[u8; 8] {
+    pub fn header(&self) -> &[u8; 8] {
         &self.header
     }
 
-    fn chunks(&self) -> &[Chunk] {
+    pub fn chunks(&self) -> &[Chunk] {
         &self.chunks
     }
 
-    fn chunk_by_type(&self, chunk_type: &str) -> Option<&Chunk> {
+    pub fn chunk_by_type(&self, chunk_type: &str) -> Option<&Chunk> {
         self.chunks()
             .iter()
             .find(|chunk| chunk.chunk_type().to_string() == chunk_type)
     }
 
     // TODO can we do better here? is there an alternative to flattening to get an array of all bytes?
-    fn as_bytes(&self) -> Vec<u8> {
+    pub fn as_bytes(&self) -> Vec<u8> {
         let all_chunk_bytes: Vec<u8> = self
             .chunks()
             .iter()
