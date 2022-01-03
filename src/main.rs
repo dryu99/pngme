@@ -19,7 +19,7 @@ fn main() {
         Some(Commands::Decode(sub_args)) => commands::decode(sub_args),
         Some(Commands::Remove(sub_args)) => commands::remove(sub_args),
         Some(Commands::Print(sub_args)) => commands::print(sub_args),
-        None => Err("Invalid command".into()),
+        None => Err("Invalid command, use -h flag for help.".into()),
     };
 
     if let Err(err) = result {
