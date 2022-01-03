@@ -14,18 +14,14 @@ fn main() {
     let args = Args::parse();
 
     match args.command {
-        Some(Commands::Encode(sub_args)) => {
-            println!("encode {}", sub_args.filename);
-        }
+        Some(Commands::Encode(sub_args)) => commands::encode(sub_args),
         Some(Commands::Decode(sub_args)) => {
             println!("decode");
         }
         Some(Commands::Remove(sub_args)) => {
             println!("remove");
         }
-        Some(Commands::Print(sub_args)) => {
-            println!("print");
-        }
+        Some(Commands::Print(sub_args)) => commands::print(sub_args),
         None => {}
     }
 }

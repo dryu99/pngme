@@ -18,8 +18,10 @@ impl Png {
         }
     }
 
+    /// Append chunk at second last index (since IEND chunk must always be last)
     pub fn append_chunk(&mut self, chunk: Chunk) {
-        self.chunks.push(chunk);
+        let index = self.chunks().len() - 1; // TODO this assumes chunks length is >= 1. Should we do validation for IHDR + IEND chunks somewhere?
+        self.chunks.insert(index, chunk);
     }
 
     pub fn remove_chunk(&mut self, chunk_type: &str) -> Result<Chunk> {
