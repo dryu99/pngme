@@ -20,7 +20,7 @@ impl Png {
     }
 
     pub fn from_file(filename: &str) -> Result<Self> {
-        let file_bytes = fs::read(filename).expect("Unable to read file");
+        let file_bytes = fs::read(filename)?;
         Png::try_from(&file_bytes[..])
     }
 
