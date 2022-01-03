@@ -5,7 +5,7 @@ use crate::args;
 use crate::chunk::Chunk;
 use crate::chunk_type::ChunkType;
 use crate::png::Png;
-use crate::{Error, Result};
+use crate::Result;
 
 /// Encodes a message into a PNG file and saves the result
 pub fn encode(args: args::EncodeArgs) -> Result<()> {
