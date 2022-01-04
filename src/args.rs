@@ -26,24 +26,36 @@ pub enum Commands {
 
 #[derive(clap::Args)]
 pub struct EncodeArgs {
+    /// path to .png file
     pub filename: String,
+
+    /// 4 char identifier
     pub chunk_type: String,
+
+    /// message to encode
     pub message: String,
 }
 
 #[derive(clap::Args)]
 pub struct DecodeArgs {
+    /// path to .png file
     pub filename: String,
+
+    /// 4 char identifier
     pub chunk_type: String,
 }
 
 #[derive(clap::Args)]
 pub struct RemoveArgs {
+    /// path to .png file
     pub filename: String,
+
+    /// 4 char identifier
     pub chunk_type: String,
 }
 
 #[derive(clap::Args)]
 pub struct PrintArgs {
+    /// path to .png file
     pub filename: String,
 }
