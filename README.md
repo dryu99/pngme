@@ -3,15 +3,15 @@
 A small CLI tool that allows you to encode and decode messages in PNGs.
 
 **Potential use cases**:
+
 - You need a new spot to hide your diary
 - Nerdier exhibitionism
-
 
 Thanks to [@picklenerd](https://picklenerd.github.io/pngme_book/introduction.html) for the idea and guidance!
 
 ## How it works
 
-Every `.png` file is essentially composed of a list of chunks, each containing relevant metadata. Together, these chunks can be decoded to produce images. `pngme` allows you to encode custom chunks into PNGs and interact with them (although currently, it's only able to read and write UTF-8 encoded text into your custom chunks).
+Every `.png` file is essentially composed of a list of chunks, each containing relevant metadata. Together, these chunks can be decoded to produce images. `pngme` allows you to encode custom chunks into PNGs and interact with them.
 
 After encoding any custom chunks, you should still be able to view the original image in PNG viewers. However, you may experience unpredictable behaviour when working with [PNG editors](http://www.libpng.org/pub/png/spec/1.2/PNG-Ordering.html).
 
