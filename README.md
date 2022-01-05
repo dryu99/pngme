@@ -1,4 +1,4 @@
-# pngme ✒️
+# PNGme ✒️
 
 A small CLI tool that allows you to encode and decode messages in PNGs.
 
